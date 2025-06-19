@@ -1,0 +1,44 @@
+# ---- Python / Django ----
+*.py[cod]
+__pycache__/
+*.sqlite3
+db.sqlite3
+*.env
+.env
+media/
+staticfiles/
+local_settings.py
+celerybeat-schedule
+*.db
+instance/
+.mypy_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# Pytest / Coverage
+.cache/
+pytest_cache/
+
+# Ignore your Python virtual environment named 'faces'
+faces/
+
+# ---- React (in face_recognition folder) ----
+face_recognition/node_modules/
+face_recognition/build/
+face_recognition/.env
+face_recognition/.DS_Store
+face_recognition/npm-debug.log
+face_recognition/yarn-debug.log
+face_recognition/yarn-error.log
+face_recognition/package-lock.json
+face_recognition/.next/
+face_recognition/.parcel-cache/
+
+# ---- General ----
+*.log
+*.pot
+*.DS_Store
+
+# ---- VS Code ----
+.vscode/

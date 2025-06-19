@@ -1,0 +1,67 @@
+.bg-theme {
+  background-color: #567df4;
+}
+.text-theme {
+  color: #567df4;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+}
+.container {
+  padding-inline: calc(var(--spacing) * 20);
+}
+
+.line {
+  background: #ffff;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(245, 248, 255, 1) 0%,
+    rgba(9, 9, 121, 1) 31%,
+    rgba(8, 41, 142, 1) 72%,
+    rgba(255, 255, 255, 1) 100%
+  );
+  width: 5px;
+
+}
+.shadow{
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+}
+.nav-active{
+    background-color: #567df4;
+    padding: 5px;
+    color:white;
+    border-radius: 3px;
+}
+@keyframes fadein {
+  0% {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.fadein {
+  animation: fadein 0.8s ease-out forwards;
+}
+.delay-1{
+animation-delay: .2s;
+}
+.delay-2{
+    animation-delay: .5s;
+}
+.delay-3{
+    animation-delay: 1s;
+}
+.activeed-nav{
+    background-color: white;
+    color:black;
+    padding-inline: 10px;
+    padding-block: 5px;
+    border-radius: 3px;
+}
