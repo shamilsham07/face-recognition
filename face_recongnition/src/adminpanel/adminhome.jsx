@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../component4/home.css";
 import { useNavigate } from "react-router-dom";
+import AdminNav from "./adminNav";
 import {
   Chart as ChartJS,
   ArcElement,
@@ -13,7 +14,7 @@ import {
   Title,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
-import image from "../assets/WhatsApp Image 2025-06-13 at 3.25.37 PM.jpeg";
+
 export default function adminhome() {
   const navigation=useNavigate()
   ChartJS.register(
@@ -64,95 +65,8 @@ export default function adminhome() {
 
   return (
     <div className="">
-      <section className="Nav px-20 py-3 fixed w-full">
-        <div className="container  bg-theme rounded py-3 ">
-          <div className="flex flex-row items-center justify-between">
-            <div className="flex gap-6 items-center">
-              <i className="bi bi-amd text-2xl text-white"></i>
-              <h3 className="text-white text-sm font-normal   activeed-nav">
-                Home
-              </h3>
-              <h3 className="text-white text-sm font-normal"onClick={()=>{navigation("/request")}}>Request</h3>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="bg-white px-3 py-2 rounded">
-                <div>
-                  <input type="text" placeholder="Search" />
-                  <i class="bi bi-search text-black"></i>
-                </div>
-              </div>
-
-              <div className="relative flex">
-                <i
-                  class="bi bi-bell-fill text-white text-lg"
-                  id="dropdownDelayButton"
-                  data-dropdown-toggle="dropdownDelay"
-                  data-dropdown-delay="500"
-                  data-dropdown-trigger="hover"
-                  type="button"
-                ></i>
-                <div
-                  id="dropdownDelay"
-                  class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700"
-                >
-                  <ul
-                    class="py-2 text-sm text-gray-700 dark:text-gray-200"
-                    aria-labelledby="dropdownDelayButton"
-                  >
-                    <li>
-                      <a
-                        href="#"
-                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                      >
-                        Dashboard
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="#"
-                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                      >
-                        Settings
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="#"
-                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                      >
-                        Earnings
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="#"
-                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                      >
-                        Sign out
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-                {count > 0 && (
-                  <div className="bg-red-600 absolute top-[-9px] left-[14px] px-2  rounded-full">
-                    <h6 className="text-white  ">{count}</h6>
-                  </div>
-                )}
-              </div>
-              <div className="pl-5">
-                <div className="rounded-full   w-[40px] h-[40px]">
-                  <img
-                    src={image}
-                    alt=""
-                    className="object-cover rounded-full w-full h-full"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
+  
+<AdminNav status={"home"}/>
       <section className="dashboard px-20 py-25">
         <div className="grid grid-cols-12 gap-4">
           <div className="col-span-6">
@@ -171,6 +85,9 @@ export default function adminhome() {
                     </th>
                     <th scope="col" class="px-6 py-3">
                       report time
+                    </th>
+                      <th scope="col" class="px-6 py-3">
+                      leave time
                     </th>
                     <th scope="col" class="px-6 py-3">
                       image
@@ -195,8 +112,18 @@ export default function adminhome() {
                         <td class="px-6 py-4 capitalize ">
                           {item.first_name} {item.last_name}
                         </td>
-                        <td class="px-6 py-4">0</td>
-                        <td class="px-6 py-4">0</td>
+                   {
+                    item.attendence=="present"?
+                    <td className="px-6 py-4 text-green-600 font-semibold">present</td>:<td className="px-6 py-4 text-red-500 font-semibold">absent</td>
+                   }
+                        <td class="px-6 py-4">{item.report_time}</td>
+                        <td className="px-6 py-4">
+                          {
+                            item.leave
+                            
+                          }
+
+                        </td>
                         <td className="px-6 py-4">
                           <img
                             src={`http://127.0.0.1:8000${item.image}`}

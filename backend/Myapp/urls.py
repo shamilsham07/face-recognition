@@ -9,9 +9,13 @@ urlpatterns = [
     path("CheckingAttendence",views.CheckingAttendence),
     path("markAttendence",views.markAttendence),
     path("checkattendence",views.checkattendence),
-    path("gettotalrequest",views.gettotalrequest),   
+    path("gettotalrequest",views.gettotalrequest), 
+    path("getpendingrequest",views.getpendingrequest),  
+    path("confirmregister",views.confirmregister),   
+     
+      
     
-    
+               
     
 
 ]

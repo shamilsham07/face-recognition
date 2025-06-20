@@ -10,6 +10,7 @@ import io
 from .models import *
 import base64
 from deepface import DeepFace
+import datetime
 
 
 
@@ -20,7 +21,7 @@ from deepface import DeepFace
            
             
     
-  
+now = datetime.datetime.now()
 
 
 @api_view(["POST"])
@@ -106,6 +107,7 @@ def markAttendence(request):
     print("hi")              
     return JsonResponse({"good":"verygood"})
 
+
 @api_view(["POST"])  
 @permission_classes([AllowAny]) 
 def checkattendence(request):
@@ -137,7 +139,16 @@ def checkattendence(request):
                     first_name=img.first_name
                     last_name=img.Last_name
                     if img.accept:
-                        return JsonResponse({"faceRecognise":f"{first_name} {last_name}"})
+                        print(datetime.datetime.now())
+                        date=datetime.datetime.now()  
+                        if Attendencemark.objects.filter(date=date,user=img).exists():         
+                            return JsonResponse({"already":f"{first_name} {last_name}"})
+                        else:
+                            print(date.time())                  
+                            Attendencemark.objects.create(date=date,user=img,join_time=date.time())     
+                            return JsonResponse({"faceRecognise":f"{first_name} {last_name}"})                       
+                            
+                                                                                                                                         
                     else:
                         return JsonResponse({"contact":"please contact admin"})
                 
@@ -155,21 +166,99 @@ def gettotalrequest(request):
         print('...................................')
         count=Registrations.objects.filter(accept=False).count()
         print(count)        
-        users=Registrations.objects.all()
+        users=Registrations.objects.filter(accept=True)                
         details=[]
         
-        for user in users:
-            details.append({
-                "first_name":user.first_name,
-                "last_name":user.Last_name,
-                "accept":user.accept,
-                "image":user.imagefield.url, 
-                "phonenumber":user.phonenumber,
-                "email":user.email  ,
-           })
-                                   
+        for user in users:         
+            if Attendencemark.objects.filter(user=user).exists():   
+                registered=Attendencemark.objects.filter(user=user)                       
+                counts=Attendencemark.objects.filter(user=user,date=datetime.datetime.now()).count()
+                for register in registered:
+                    print("..............................................................")                     
+                    time=register.join_time
+                    formatted_time = time.strftime("%I:%M %p")                            
+                    details.append({
+                        "first_name":register.user.first_name,          
+                        "last_name":register.user.Last_name,
+                        "accept":register.user.accept,
+                        "image":register.user.imagefield.url, 
+                        "phonenumber":register.user.phonenumber,            
+                        "email":register.user.email,
+                        "report_time":formatted_time,    
+                        "attendence":"present",  
+                        "leave":0,                                                                  
+                    })  
+            else:
+                       details.append({
+                        "first_name":user.first_name,          
+                        "last_name":user.Last_name,
+                        "accept":user.accept,
+                        "image":user.imagefield.url, 
+                        "phonenumber":user.phonenumber,            
+                        "email":user.email,
+                        "attendence":"absent",
+                        "report_time":0,
+                        "leave":0,                                                                     
+                    })          
+                                           
+                                           
         return JsonResponse({"count":count,"details":details})
     except Exception as e:       
         print(e)                        
         return JsonResponse({"nothing":0})                    
     
+
+@api_view(["GET"])  
+@permission_classes([AllowAny]) 
+def getpendingrequest(request):
+    try:
+        print("jey ")
+        details=Registrations.objects.filter(accept=False)
+        send=[]
+        for detail in details:
+            print(detail.id)
+            send.append({
+                "first_name":  detail.first_name,
+                "last_name":detail.Last_name,
+                "image":detail.imagefield.url,
+                "phonenumber":detail.phonenumber,         
+                "email":detail.email,
+                "id":detail.id,
+            })
+        return JsonResponse({"details":send})
+    except Exception as e:
+        print(e)                                              
+        return JsonResponse({"error":'something went wrong'})
+    
+    
+
+@api_view(["POST"])  
+@permission_classes([AllowAny]) 
+def confirmregister(request):    
+    data=request.data  
+    id=data.get("id")            
+    print(id)
+    the_user=Registrations.objects.get(id=id)
+    if the_user:
+         the_user.accept=True
+         the_user.save()
+         send=[]
+         details=Registrations.objects.filter(accept=False)  
+         if details:
+              for detail in details:
+                  send.append({
+                      "first_name":detail.first_name,
+                       "last_name":detail.Last_name,
+                       "image":detail.imagefield.url,
+                       "id":detail.id,
+                        "phonenumber":detail.phonenumber,         
+                        "email":detail.email,
+                    })
+              return JsonResponse({"detail":send})
+         else:
+             return JsonResponse({"nothing":""})
+                       
+              
+                                
+        
+    return JsonResponse({"send":"sended"})

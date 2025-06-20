@@ -11,6 +11,7 @@ import { Routes,Route } from 'react-router-dom'
 import Requestpage from './adminpanel/requestpage'
 import Adminhome from './adminpanel/adminhome'
 import 'animate.css';
+import AdminNav from './adminpanel/adminNav'
 import Loader from './component4/loader/loader'
 import Setattendence from './component4/attendence/setattendence'
 
@@ -31,6 +32,8 @@ function App() {
     <Route path='/attendence' element={<Setattendence/>}/>
     <Route path='/loader' element={<Loader/>}/>
     <Route path='/request' element={<Requestpage/>}/>
+    <Route path='/adminnav' element={<AdminNav/>}/>
+
 
 
 

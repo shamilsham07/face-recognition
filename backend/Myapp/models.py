@@ -15,6 +15,6 @@ class Registrations(models.Model):
 class Attendencemark(models.Model):
     user=models.ForeignKey(Registrations,on_delete=models.CASCADE)
     date=models.DateField()
-    join_time=models.DateField()
-    leave_time=models.DateField()
-  
+    join_time=models.TimeField(blank=True,null=True)            
+    leave_time=models.TimeField(blank=True,null=True)
+       

@@ -46,7 +46,7 @@ export default function Setattendence() {
         theme: "colored",
       });
     } else if (result.faceRecognise) {
-      toast.success("attendence marked", result.faceRecognise, {
+      toast.success(`attendence marked ${result.faceRecognise}` , {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -56,7 +56,23 @@ export default function Setattendence() {
         progress: undefined,
         theme: "colored",
       });
-    } else {
+    }
+    else if (result.already) {
+      toast.info(`alrady marked attendence ${result.already}`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+    }
+    
+    
+    
+    else {
       toast.error("something went wrong", {
         position: "top-right",
         autoClose: 5000,
@@ -87,6 +103,7 @@ export default function Setattendence() {
       const res = await result.json();
       console.log(res);
       if (res) {
+        console.log(res.faceRecognise)
         setloader(false);
         toaster(res);
       }
