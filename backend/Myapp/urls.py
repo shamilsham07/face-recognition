@@ -12,6 +12,14 @@ urlpatterns = [
     path("gettotalrequest",views.gettotalrequest), 
     path("getpendingrequest",views.getpendingrequest),  
     path("confirmregister",views.confirmregister),   
+    path("goCheckanynotification",views.goCheckanynotification),   
+    path("markLeave",views.markLeave),   
+    path("requests",views.requests),   
+    path("userlog",views.userlog),   
+    
+    
+
+                                                                           
      
       
     

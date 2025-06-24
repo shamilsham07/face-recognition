@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny 
 import cv2
+from django.contrib.auth import authenticate
 import face_recognition
 import numpy as np
 from PIL import Image
@@ -170,12 +171,13 @@ def gettotalrequest(request):
         details=[]
         
         for user in users:         
-            if Attendencemark.objects.filter(user=user).exists():   
+            if Attendencemark.objects.filter(user=user,date=datetime.datetime.now()).exists():   
                 registered=Attendencemark.objects.filter(user=user)                       
-                counts=Attendencemark.objects.filter(user=user,date=datetime.datetime.now()).count()
-                for register in registered:
+                counts=Attendencemark.objects.filter(user=user,date=datetime.datetime.now())
+                for register in counts:                
                     print("..............................................................")                     
                     time=register.join_time
+                    l_time=register.leave_time.strftime("%I:%M %p")
                     formatted_time = time.strftime("%I:%M %p")                            
                     details.append({
                         "first_name":register.user.first_name,          
@@ -184,11 +186,11 @@ def gettotalrequest(request):
                         "image":register.user.imagefield.url, 
                         "phonenumber":register.user.phonenumber,            
                         "email":register.user.email,
-                        "report_time":formatted_time,    
+                        "report_time":formatted_time,                                            
                         "attendence":"present",  
-                        "leave":0,                                                                  
+                        "Leave_time":l_time,                                                                  
                     })  
-            else:
+            else:                                                 
                        details.append({
                         "first_name":user.first_name,          
                         "last_name":user.Last_name,
@@ -262,3 +264,117 @@ def confirmregister(request):
                                 
         
     return JsonResponse({"send":"sended"})
+
+
+
+@api_view(["GET"])  
+@permission_classes([AllowAny]) 
+def goCheckanynotification(request):
+    try:
+       reg= Registrations.objects.filter(accept=False)
+       details=[]
+       if reg:
+           for registration in reg:
+               print("heello")
+               img=registration.imagefield.url
+               first_name=registration.first_name
+               last_name=registration.Last_name
+               email=registration.email
+               details.append({
+                   "name":f"{first_name} {last_name}",
+                   "img":img,
+                   "email":email, 
+               })           
+           return JsonResponse({"details":details})                    
+    except Exception as e:
+        print(e)
+        return JsonResponse({"error":"something went wrong"})
+    
+@api_view(["POST"])  
+@permission_classes([AllowAny])            
+def markLeave(request):
+    try:
+        print("hiiiu")
+        data=request.FILES["image"]
+        print(data)
+        image_pil=Image.open(data).convert("RGB")
+        image_np=np.array(image_pil) 
+        formatted_time = now.strftime("%I:%M %p")     
+        print(now)
+        try:
+            print("e")
+            face=DeepFace.extract_faces(image_np,enforce_detection=True)
+            print(face)
+        except Exception as e:
+            print(e)
+            return JsonResponse ({"noface":"bro no face detected"})
+        reg=Registrations.objects.all()
+        for regist in reg:
+              images=regist.imagefield
+            
+              if images:
+                stored_img_pil=Image.open(images).convert("RGB")
+                stored_img_np=np.array(stored_img_pil)
+                result=DeepFace.verify(
+                    img1_path=image_np,
+                    img2_path=stored_img_np,
+                    enforce_detection=True
+                )
+              print(result)                          
+                  
+              if result["verified"]:
+                     if Attendencemark.objects.filter(date=now,user=regist).exists():
+                         attendence=Attendencemark.objects.get(date=now,user=regist)
+                         if attendence.join_time:
+                             if attendence.leave_time:
+                                 return JsonResponse({"alreadymarked":"bro you already mark"})
+                             else:
+                                attendence.leave_time=now.time()
+                                attendence.save()
+                                return JsonResponse({"suucessfully":"every seems good"})     
+                         else:
+                             return JsonResponse({"so_late": "Please a contact manager you so late "}) 
+                     else:
+                            return JsonResponse({"so_late": "Please a contact manager you so late "}) 
+                     
+                                                                        
+        print(formatted_time)                                                                
+        return JsonResponse({"error":"may be you are not registered"})           
+    except Exception as e:
+        print(e)
+        return JsonResponse({"error":"something went wrong"})                                         
+    
+    
+    
+@api_view(["GET"])  
+@permission_classes([AllowAny])            
+def requests(request):
+    try:
+        print("helo")
+        count_present=Attendencemark.objects.filter(date=now).count()
+        totaluser=Registrations.objects.filter(accept=True).count()
+        updats=Registrations.objects.filter(accept=False).count()
+        print("...........................",count_present)
+        return JsonResponse({"count":count_present,"total":totaluser,"update":updats})
+        
+    except Exception as e:                      
+        print(e)
+        return JsonResponse({"error":"something went wrong"})                               
+    
+@api_view(["POST"])                                          
+@permission_classes([AllowAny])            
+def userlog(request):
+    try: 
+        data=request.data
+        name=data.get("username")                                                                                                        
+        password=data.get("pass")          
+        result=authenticate(username=name,password=password)  
+               
+        print(result)      
+        if(result):
+            return JsonResponse({"data":"goood"})
+               
+        return JsonResponse({"error":"wrong id and pass"})
+    except Exception as e: 
+        print(e)
+        return JsonResponse({"error":"something went wrong"})          

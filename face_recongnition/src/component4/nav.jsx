@@ -18,7 +18,7 @@ export default function Nav({status}) {
             <h4 className={status=="home"?"nav-active":""} onClick={()=>usenavigation("/")}>Home</h4>
             <h4 onClick={()=>usenavigation("/attendence")} className={status=="attendence"?"nav-active":""}>Attendence</h4>
             <h4 onClick={()=>usenavigation("/registration")} className={status=="registration"?"nav-active":""}>register</h4>
-            <h4>More</h4>
+          
 
           </div>
         </div>

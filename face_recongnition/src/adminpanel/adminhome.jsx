@@ -15,8 +15,12 @@ import {
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 
-export default function adminhome() {
-  const navigation=useNavigate()
+export default function Adminhome() {
+  const navigation = useNavigate();
+  const [counts, setcounts] = useState();
+  const [totalusers, settotalusers] = useState();
+  const [t_updates, setUpdates] = useState();
+
   ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -47,6 +51,19 @@ export default function adminhome() {
       },
     ],
   };
+
+  const requests = async () => {
+    const result = await fetch("http://localhost:8000/requests", {
+      method: "GET",
+    });
+    const res = await result.json();
+    if (res.count) {
+      setcounts(res.count);
+      setUpdates(res.update);
+      settotalusers(res.total);
+    }
+  };
+
   const [count, setcount] = useState(0);
   const [details, setdetails] = useState({});
   async function getRequest() {
@@ -61,12 +78,12 @@ export default function adminhome() {
 
   useEffect(() => {
     getRequest();
+    requests();
   }, []);
 
   return (
     <div className="">
-  
-<AdminNav status={"home"}/>
+      <AdminNav status={"home"} />
       <section className="dashboard px-20 py-25">
         <div className="grid grid-cols-12 gap-4">
           <div className="col-span-6">
@@ -86,7 +103,7 @@ export default function adminhome() {
                     <th scope="col" class="px-6 py-3">
                       report time
                     </th>
-                      <th scope="col" class="px-6 py-3">
+                    <th scope="col" class="px-6 py-3">
                       leave time
                     </th>
                     <th scope="col" class="px-6 py-3">
@@ -112,18 +129,17 @@ export default function adminhome() {
                         <td class="px-6 py-4 capitalize ">
                           {item.first_name} {item.last_name}
                         </td>
-                   {
-                    item.attendence=="present"?
-                    <td className="px-6 py-4 text-green-600 font-semibold">present</td>:<td className="px-6 py-4 text-red-500 font-semibold">absent</td>
-                   }
+                        {item.attendence == "present" ? (
+                          <td className="px-6 py-4 text-green-600 font-semibold">
+                            present
+                          </td>
+                        ) : (
+                          <td className="px-6 py-4 text-red-500 font-semibold">
+                            absent
+                          </td>
+                        )}
                         <td class="px-6 py-4">{item.report_time}</td>
-                        <td className="px-6 py-4">
-                          {
-                            item.leave
-                            
-                          }
-
-                        </td>
+                        <td className="px-6 py-4">{item.Leave_time}</td>
                         <td className="px-6 py-4">
                           <img
                             src={`http://127.0.0.1:8000${item.image}`}
@@ -151,7 +167,7 @@ export default function adminhome() {
                   </h3>
                   <div className="flex items-center gap-4 justify-center">
                     <h3 className="text-5xl font-semibold capitalize text-white ">
-                      100
+                      {totalusers}
                     </h3>
                   </div>
                 </div>
@@ -161,17 +177,17 @@ export default function adminhome() {
                   </h3>
                   <div className="flex items-center gap-4 justify-center">
                     <h3 className="text-5xl font-semibold capitalize text-white ">
-                      10
+                      {counts}
                     </h3>
                   </div>
                 </div>{" "}
                 <div className="card-1 bg-theme px-10 py-10 text-center rounded">
                   <h3 className="text-lg font-semibold capitalize text-white ">
-                    Total updates
+                   total updates
                   </h3>
                   <div className="flex items-center gap-4 justify-center">
                     <h3 className="text-5xl font-semibold capitalize text-white ">
-                      3
+                        {t_updates}
                     </h3>
                   </div>
                 </div>

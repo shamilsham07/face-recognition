@@ -11,6 +11,36 @@ export default function Setattendence() {
   const [loader, setloader] = useState(false);
   const webcamRef = useRef();
 
+  const MarkLeave = async (file, formdata) => {
+    console.log(file);
+    const result = await fetch("http://localhost:8000/markLeave", {
+      method: "POST",
+      body: formdata,
+    });
+    const res = await result.json();
+    console.log(res);
+    setloader(false);
+    res.succesfull && toasts(res.succesfull, "success");
+    res.noface&&toasts(res.noface,"error")
+    res.alreadymarked&&toasts(res.alreadymarked,"warn")
+    res.so_late&&toasts(res.so_late,"info")
+    res.error&&toasts(res.error,"error")
+
+  };
+
+  const toasts = (res, valuess) => {
+    toast[valuess](res, {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: false,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+    });
+  };
+
   const toaster = (result) => {
     if (result.no_face) {
       toast.error("Bro No Face Detected", {
@@ -46,7 +76,7 @@ export default function Setattendence() {
         theme: "colored",
       });
     } else if (result.faceRecognise) {
-      toast.success(`attendence marked ${result.faceRecognise}` , {
+      toast.success(`attendence marked ${result.faceRecognise}`, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -56,8 +86,7 @@ export default function Setattendence() {
         progress: undefined,
         theme: "colored",
       });
-    }
-    else if (result.already) {
+    } else if (result.already) {
       toast.info(`alrady marked attendence ${result.already}`, {
         position: "top-right",
         autoClose: 5000,
@@ -68,11 +97,7 @@ export default function Setattendence() {
         progress: undefined,
         theme: "colored",
       });
-    }
-    
-    
-    
-    else {
+    } else {
       toast.error("something went wrong", {
         position: "top-right",
         autoClose: 5000,
@@ -87,15 +112,19 @@ export default function Setattendence() {
   };
 
   const CheckAttendence = async () => {
+    const now = new Date();
+    const hours = now.getHours();
+    console.log(hours);
     const screenshot = webcamRef.current.getScreenshot();
     const response = await fetch(screenshot);
     const blob = await response.blob();
     const jpegBlob = new Blob([blob], { type: "image/jpeg" });
     const file = new File([jpegBlob], "photo.jpg", { type: "image/jpeg" });
-    console.log(file);
-    if (file) {
-      const formdata = new FormData();
-      formdata.append("image", file);
+
+    const formdata = new FormData();
+    formdata.append("image", file);
+
+    if (hours < 12) {
       const result = await fetch("http://localhost:8000/checkattendence", {
         method: "POST",
         body: formdata,
@@ -103,10 +132,12 @@ export default function Setattendence() {
       const res = await result.json();
       console.log(res);
       if (res) {
-        console.log(res.faceRecognise)
+        console.log(res.faceRecognise);
         setloader(false);
         toaster(res);
       }
+    } else {
+      MarkLeave(file, formdata);
     }
   };
 
